@@ -1,18 +1,42 @@
 #include <bits/stdc++.h>
 
-void action(int n,  std::vector<int> adj, std::vector<std::vector<int>>& mat_adj, int nodeqtt,
-             std::unordered_map<int, int> &map_colors){
+void action(int n,  std::vector<int> adj, std::vector<std::vector<int>>& mat_adj,
+             std::list<int>& current_nodes, std::unordered_map<int, int> &map_colors){
     map_colors[n] = map_colors[adj[0]];
+
+
+    // Remover adj de current_nodes
+    std::list<int>::iterator it = current_nodes.begin();
+    std::vector<int>::iterator it_adj = adj.begin();
+    while (it_adj != adj.end())
+    {
+        if(*it == *it_adj){
+            it = current_nodes.erase(it);
+            ++it_adj;
+        }
+        else{
+            ++it;
+        }
+        
+    }
+    
+
     for(int y: adj){
-        for(int i = 0; i < nodeqtt; i++){
+        for(int i: current_nodes){
+
             if(mat_adj[i][y]){
+                // vertices adjacentes a algum vertice condensado ...
                 mat_adj[i][y] = 0;
                 mat_adj[y][i] = 0;
+
+                // ... sao agora adjacentes ao representante
                 mat_adj[n][i] = 1;
                 mat_adj[i][n] = 1;
             }
         }
+        mat_adj[y][y] = 0;
     }
+
 }
 int main(){
     // vertice: rotulados por numeros, que estará associado a uma cor por um (dicionário? é esse o nome?)
@@ -22,9 +46,9 @@ int main(){
     // Leitura do numero de vertices do grafo
     int Nv = 9; // numero de vertices
 
-    std::vector<int> Vertices(9);
-    for(int i = 0; i < Nv; ++i){
-        Vertices[i] = i;
+    std::list<int> Vertices;
+    for(int i = Nv - 1; i >= 0; --i){
+        Vertices.push_front(i);
     }
 
     // Leitura das cores
@@ -67,13 +91,13 @@ int main(){
     /// -------------------------------------
 
     // "Leitura" das arestas do grafo (fase 4)
-    std::vector<std::pair<int, int>> adj = {{std::pair<int, int>(0, 1)}, std::pair<int, int>(0, 2), std::pair<int, int>(0, 3),
-                                            std::pair<int, int>(1, 2), std::pair<int, int>(1, 5),
-                                            std::pair<int, int>(2, 3), std::pair<int, int>(2, 5), std::pair<int, int>(2, 6),
-                                            std::pair<int, int>(4, 5), std::pair<int, int>(4, 7),
-                                            std::pair<int, int>(5, 6), std::pair<int, int>(5, 7), std::pair<int, int>(5, 8),
-                                            std::pair<int, int>(6, 8),
-                                            std::pair<int, int>(7, 8)};
+    std::vector<std::pair<int, int>> adj = {{0, 1}, {0, 2}, {0, 3},
+                                            {1, 2}, {1, 5},
+                                            {2, 3}, {2, 5}, {2, 6},
+                                            {4, 5}, {4, 7},
+                                            {5, 6}, {5, 7}, {5, 8},
+                                            {6, 8},
+                                            {7, 8}};
     int size_adj = adj.size();
     for(int k = 0; k < size_adj; ++k){
         mat_adj[adj[k].first][adj[k].second] = 1;
@@ -133,38 +157,10 @@ int main(){
 
         std::vector<int> J{1, 4, 8}; // Na prática, já encontrou esses valores antes
 
-        // (1) V = V - J
-        Vertices =  std::vector<int> {0, 2, 3, 5, 6, 7}; // Fiz isso manualmente, refazer depois
+        action(v, J, mat_adj, Vertices, map_colors);
 
-        // (2)
-        for(int x : Vertices){
-            if(x == v){
-                continue;
-            }
-            else{
-                for(int y : J){
-                    if(mat_adj[x][y] == 1){
-                        // vertices adjacentes a algum vertice condensado ...
-                        mat_adj[x][y] = 0;
-                        mat_adj[y][x] = 0;
 
-                        // ... sao agora adjacentes ao representante
-                        mat_adj[x][v] = 1;
-                        mat_adj[v][x] = 1;
-                    }
-                }
-            }
-        }
 
-        // (3)
-        for(int y : J){
-            mat_adj[y][y] = 0;
-            mat_adj[y][v] = 0;
-            mat_adj[v][y] = 0;
-        }
-
-        // (4)
-        map_colors[v] = map_colors[J[0]];
 
         /// --------PRINT DA MATRIZ-------------
         std::cout << "V ";
