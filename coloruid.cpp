@@ -1,5 +1,19 @@
 #include <bits/stdc++.h>
 
+void action(int n,  std::vector<int> adj, std::vector<std::vector<int>>& mat_adj, int nodeqtt,
+             std::unordered_map<int, int> &map_colors){
+    map_colors[n] = map_colors[adj[0]];
+    for(int y: adj){
+        for(int i = 0; i < nodeqtt; i++){
+            if(mat_adj[i][y]){
+                mat_adj[i][y] = 0;
+                mat_adj[y][i] = 0;
+                mat_adj[n][i] = 1;
+                mat_adj[i][n] = 1;
+            }
+        }
+    }
+}
 int main(){
     // vertice: rotulados por numeros, que estará associado a uma cor por um (dicionário? é esse o nome?)
     // aresta: par de vertices (v1, v2) (representada na lista de adjacência por 1 ou 0)
@@ -53,7 +67,7 @@ int main(){
     /// -------------------------------------
 
     // "Leitura" das arestas do grafo (fase 4)
-    std::vector<std::pair<int, int>> adj = {std::pair<int, int>(0, 1), std::pair<int, int>(0, 2), std::pair<int, int>(0, 3),
+    std::vector<std::pair<int, int>> adj = {{std::pair<int, int>(0, 1)}, std::pair<int, int>(0, 2), std::pair<int, int>(0, 3),
                                             std::pair<int, int>(1, 2), std::pair<int, int>(1, 5),
                                             std::pair<int, int>(2, 3), std::pair<int, int>(2, 5), std::pair<int, int>(2, 6),
                                             std::pair<int, int>(4, 5), std::pair<int, int>(4, 7),
@@ -116,6 +130,7 @@ int main(){
         
         // Ideia do Condensar (primeira condensação da fase 4):
         int v = 5; // Na prática, já encontrou esse valor antes
+
         std::vector<int> J{1, 4, 8}; // Na prática, já encontrou esses valores antes
 
         // (1) V = V - J
