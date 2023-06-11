@@ -1,15 +1,85 @@
 #include <bits/stdc++.h>
 
+
+int allInOne(int n, std::vector<std::vector<int>>& mat_adj, std::vector<int>& onecvertices){
+    int retorno = 0;
+    for(int i: onecvertices){
+        if(mat_adj[n][i])retorno++;
+    }
+    return retorno;
+}
+std::pair<int, int> find(std::list<int>& Vertices, std::vector<std::vector<int>>& mat_adj, std::unordered_map<int, int> &map_colors, int nc){
+    std::vector<std::vector<int>> n_colors(nc);
+
+    std::list<int> theOnes;
+    for(int i : Vertices){
+        n_colors[map_colors[i]].push_back(i);
+    }
+    for(int i = 0; i < nc; i++){
+        if(n_colors[i].size() == 1){
+            theOnes.push_front(n_colors[i][0]);
+        }
+    }
+    std::list<int> toCheck;
+    
+    // Se houver vértices de cor única no grafo:
+    if(!theOnes.empty()){
+        toCheck = theOnes;
+    }
+    else{
+        toCheck = Vertices;
+    }
+
+    // for(int i = 0; i < n_colors.size(); ++i){
+    //     for (int j : n_colors[i]){
+    //         std::cout << j << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    int v_max_colors = -1;
+    int c_max_colors = -1;
+    int max_colors = -1;
+    int number;
+    for(int i : toCheck){
+        std::cout << "vértice " << i<< std::endl;
+        for(int j = 0; j < nc; ++j){
+            number = allInOne(i, mat_adj, n_colors[j]);
+            std::cout << "number da cor " << j <<": " << number << std::endl;
+            // Se houver vértice v ligado a todos os vértices J de uma cor:
+            if(number == n_colors[j].size()){
+                return {i, j};
+            }
+            if(number > max_colors){
+                std::cout <<"cor " << j << std::endl;
+                max_colors = number;
+                v_max_colors = i;
+                c_max_colors = j;
+            }
+        }
+    }
+    // Senão:
+    // Achar o vértice v ligado a maior quantidade de vértices J de mesma cor
+    // std::cout << "nós verdes: " << std::endl;
+    // for(int i : n_colors[1]){
+    //     std::cout << i << std::endl;
+    // }
+    // std::cout << std::endl;
+    return {v_max_colors, c_max_colors};
+
+}
+
 std::vector<int> findAdj(int v, int c, std::vector<std::vector<int>>& mat_adj, 
                         std::unordered_map<int, int> &map_colors){
-                            int size = mat_adj[v].size();
-                            std::vector<int> retorno;
-                            for(int i = 0; i < size; i++){
-                                if(map_colors[i] == c && mat_adj[v][i])
-                                    retorno.pushback(i);
-                            }
-                            return retorno;
+
+    int size = mat_adj[v].size();
+    std::vector<int> retorno;
+    for(int i = 0; i < size; i++){
+        if(map_colors[i] == c && mat_adj[v][i])
+            retorno.push_back(i);
+    }
+    return retorno;
 }
+
 void action(int n,  std::vector<int> adj, std::vector<std::vector<int>>& mat_adj,
              std::list<int>& current_nodes, std::unordered_map<int, int> &map_colors){
     map_colors[n] = map_colors[adj[0]];
@@ -18,6 +88,7 @@ void action(int n,  std::vector<int> adj, std::vector<std::vector<int>>& mat_adj
     // Remover adj de current_nodes
     std::list<int>::iterator it = current_nodes.begin();
     std::vector<int>::iterator it_adj = adj.begin();
+    std::cout << "pre while" << std::endl;
     while (it_adj != adj.end())
     {
         if(*it == *it_adj){
@@ -29,7 +100,7 @@ void action(int n,  std::vector<int> adj, std::vector<std::vector<int>>& mat_adj
         }
         
     }
-    
+    std::cout << "pos while" << std::endl;
 
     for(int y: adj){
         for(int i: current_nodes){
@@ -46,8 +117,9 @@ void action(int n,  std::vector<int> adj, std::vector<std::vector<int>>& mat_adj
         }
         mat_adj[y][y] = 0;
     }
-
+    std::cout << "pos for" << std::endl;
 }
+
 int main(){
     // vertice: rotulados por numeros, que estará associado a uma cor por um (dicionário? é esse o nome?)
     // aresta: par de vertices (v1, v2) (representada na lista de adjacência por 1 ou 0)
@@ -55,6 +127,7 @@ int main(){
 
     // Leitura do numero de vertices do grafo
     int Nv = 9; // numero de vertices
+    int nc = 4; // numero de cores
 
     std::list<int> Vertices;
     for(int i = Nv - 1; i >= 0; --i){
@@ -134,7 +207,41 @@ int main(){
     // Ler grafo G = (V, A):
         // Ler vértices, e suas cores respectivas
         // Ler arestas (criar matriz de adjacência n por n)
+    
+    while(Vertices.size() != 1){
+        std::cout << "AAAAA1" << std::endl;
+        std::pair<int, int> a = find(Vertices, mat_adj, map_colors, nc);
+        std::cout << "AAAAA2" << std::endl;
+        int v = a.first; // Na prática, já encontrou esse valor antes
+        int idealColor = a.second;
+        // vou fazer uma função que encontra os adjacentes em função do ponto e da cor
+        std::vector<int> J = findAdj(v, idealColor, mat_adj, map_colors);
+        // std::vector<int> J{1, 4, 8}; // Na prática, já encontrou esses valores antes
+        std::cout << "AAAAA3" << std::endl;
 
+        std::cout<< "vertice: " << v << " e vertices a serem condensados: {}";
+        for(int i : J){
+            std::cout << i << " ";
+        }
+        std::cout << "}" << std::endl;
+        action(v, J, mat_adj, Vertices, map_colors);
+        std::cout << "AAAAA4" << std::endl;
+        /// --------PRINT DA MATRIZ-------------
+        std::cout << "V ";
+        for(int k = 0; k < Nv; ++k){
+            std::cout << k << " ";
+        }
+        std::cout << std::endl;
+        for(int k = 0; k < Nv; ++k){
+            std::cout << k << " ";
+            for(int l = 0; l < Nv; ++l){
+                std::cout << mat_adj[k][l] << " ";
+            }
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+        /// -------------------------------------
+    }
     // Enquanto houver mais de um vértice em V, faça:
         // Se houver vértices de cor única no grafo:
             // Se houver vértice v ligado a todos os vértices J de uma cor:
@@ -163,13 +270,7 @@ int main(){
                 // v.cor() = j.cor()
         
         // Ideia do Condensar (primeira condensação da fase 4):
-        int v = 5; // Na prática, já encontrou esse valor antes
-        int idealColor = 1;
-        // vou fazer uma função que encontra os adjacentes em função do ponto e da cor
-        std::vector<int> J = findAdj(v, idealColor, mat_adj, map_colors);
-        // std::vector<int> J{1, 4, 8}; // Na prática, já encontrou esses valores antes
-
-        action(v, J, mat_adj, Vertices, map_colors);
+        
 
 
 
