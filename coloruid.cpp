@@ -1,5 +1,15 @@
 #include <bits/stdc++.h>
 
+std::vector<int> findAdj(int v, int c, std::vector<std::vector<int>>& mat_adj, 
+                        std::unordered_map<int, int> &map_colors){
+                            int size = mat_adj[v].size();
+                            std::vector<int> retorno;
+                            for(int i = 0; i < size; i++){
+                                if(map_colors[i] == c && mat_adj[v][i])
+                                    retorno.pushback(i);
+                            }
+                            return retorno;
+}
 void action(int n,  std::vector<int> adj, std::vector<std::vector<int>>& mat_adj,
              std::list<int>& current_nodes, std::unordered_map<int, int> &map_colors){
     map_colors[n] = map_colors[adj[0]];
@@ -154,8 +164,10 @@ int main(){
         
         // Ideia do Condensar (primeira condensação da fase 4):
         int v = 5; // Na prática, já encontrou esse valor antes
-
-        std::vector<int> J{1, 4, 8}; // Na prática, já encontrou esses valores antes
+        int idealColor = 1;
+        // vou fazer uma função que encontra os adjacentes em função do ponto e da cor
+        std::vector<int> J = findAdj(v, idealColor, mat_adj, map_colors);
+        // std::vector<int> J{1, 4, 8}; // Na prática, já encontrou esses valores antes
 
         action(v, J, mat_adj, Vertices, map_colors);
 
