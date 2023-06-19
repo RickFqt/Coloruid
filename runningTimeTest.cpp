@@ -252,131 +252,136 @@ int main( int argc, char * argv[] ){
     for(int times = 0; times < 20; ++times){
         double elapsed_time_mean = 0;
 
-        std::ifstream file(testCases[times]);
-        if (!file) {
-            std::cout << "Não foi possível abrir o arquivo: " << testCases[times] << std::endl;
-            return 1;
-        }
-        // vertice: rotulados por numeros, que estará associado a uma cor por um (dicionário? é esse o nome?)
-        // aresta: par de vertices (v1, v2) (representada na lista de adjacência por 1 ou 0)
-        // grafo: matriz de adjacencia
+        for(int repetitions = 0; repetitions < 1000; ++ repetitions){
+            std::ifstream file(testCases[times]);
+            if (!file) {
+                std::cout << "Não foi possível abrir o arquivo: " << testCases[times] << std::endl;
+                return 1;
+            }
+            // vertice: rotulados por numeros, que estará associado a uma cor por um (dicionário? é esse o nome?)
+            // aresta: par de vertices (v1, v2) (representada na lista de adjacência por 1 ou 0)
+            // grafo: matriz de adjacencia
 
-        // Leitura do numero de vertices do grafo
-        int Nv = 0; // numero de vertices
-        int nc = 0; // numero de cores
-        
-        // Leitura das cores
-        std::unordered_map<int, int> map_colors;
-        
-        // matriz de adjacência
-        std::vector<std::vector<int>> mat_adj;
-        
-        //variaveis para auxiliar a leitura
-        bool first = true;
-        int colorcount = 0;
-        std::string line;
-        std::vector<std::string> tokenLine;
-        while (std::getline(file, line)) {
-            tokenLine = tokenize(line);
-            if(first){
-                first = false;
-                nc = std::stoi(tokenLine[0]);
-                Nv = std::stoi(tokenLine[1]);
-                mat_adj.assign(Nv, std::vector<int>(Nv, 0));
-                int i = 0;
-                int j = 0;
-                while(i < Nv){
-                    mat_adj[i][j] = 1;
-                    ++i;
-                    ++j;
-                }
-            }else{
-                // std::cout << "chega aqui?" << std::endl;
-                if(colorcount < Nv){
-                    colorcount++;
-                    // std::cout << "buga aqui?" << std::endl;
-                    map_colors[std::stoi(tokenLine[0])] = std::stoi(tokenLine[1]);
+            // Leitura do numero de vertices do grafo
+            int Nv = 0; // numero de vertices
+            int nc = 0; // numero de cores
+            
+            // Leitura das cores
+            std::unordered_map<int, int> map_colors;
+            
+            // matriz de adjacência
+            std::vector<std::vector<int>> mat_adj;
+            
+            //variaveis para auxiliar a leitura
+            bool first = true;
+            int colorcount = 0;
+            std::string line;
+            std::vector<std::string> tokenLine;
+            while (std::getline(file, line)) {
+                tokenLine = tokenize(line);
+                if(first){
+                    first = false;
+                    nc = std::stoi(tokenLine[0]);
+                    Nv = std::stoi(tokenLine[1]);
+                    mat_adj.assign(Nv, std::vector<int>(Nv, 0));
+                    int i = 0;
+                    int j = 0;
+                    while(i < Nv){
+                        mat_adj[i][j] = 1;
+                        ++i;
+                        ++j;
+                    }
                 }else{
-                    mat_adj[std::stoi(tokenLine[0])][std::stoi(tokenLine[1])] = 1;
-                    mat_adj[std::stoi(tokenLine[1])][std::stoi(tokenLine[0])] = 1;
+                    // std::cout << "chega aqui?" << std::endl;
+                    if(colorcount < Nv){
+                        colorcount++;
+                        // std::cout << "buga aqui?" << std::endl;
+                        map_colors[std::stoi(tokenLine[0])] = std::stoi(tokenLine[1]);
+                    }else{
+                        mat_adj[std::stoi(tokenLine[0])][std::stoi(tokenLine[1])] = 1;
+                        mat_adj[std::stoi(tokenLine[1])][std::stoi(tokenLine[0])] = 1;
+                    }
                 }
             }
-        }
-        file.close();
+            file.close();
 
-        /// ============================== TIMER COMEÇA =================================================
-        auto start = std::chrono::steady_clock::now();
-        // lista de vértices
-        std::list<int> Vertices;
-        for(int i = Nv - 1; i >= 0; --i){
-            Vertices.push_front(i);
-        }
-
-        /// --------PRINT DA MATRIZ-------------
-        std::cout << "Cor de cada vértice (vertice, cor): ";
-        for(int k = 0; k < Nv; ++k){
-            std::cout << "(" << k << ", " << map_colors[k] <<");";
-        }std::cout << std::endl;
-        std::cout << "V ";
-        for(int k = 0; k < Nv; ++k){
-            std::cout << k << " ";
-        }
-        std::cout << std::endl;
-        for(int k = 0; k < Nv; ++k){
-            std::cout << k << " ";
-            for(int l = 0; l < Nv; ++l){
-                std::cout << mat_adj[k][l] << " ";
+            /// ============================== TIMER COMEÇA =================================================
+            auto start = std::chrono::steady_clock::now();
+            // lista de vértices
+            std::list<int> Vertices;
+            for(int i = Nv - 1; i >= 0; --i){
+                Vertices.push_front(i);
             }
-            std::cout << std::endl;
-        }
-        std::cout << std::endl;
-        /// -------------------------------------
-
-
-        // Ler grafo G = (V, A):
-        // Ler vértices, e suas cores respectivas
-        // Ler arestas (criar matriz de adjacência n por n)
-        int actcount = 0;
-        while(Vertices.size() != 1){
-            // std::cout << "AAAAA1" << std::endl;
-            std::pair<int, int> a = find(Vertices, mat_adj, map_colors, nc);
-            //std::cout << "AAAAA2" << std::endl;
-            int v = a.first; // Na prática, já encontrou esse valor antes
-            int idealColor = a.second;
-            std::cout << "A ação será no vértice " << v << " com a cor " << idealColor << "."<< std::endl;
-            actcount++;
-            // vou fazer uma função que encontra os adjacentes em função do ponto e da cor
-            std::vector<int> J = findAdj(v, idealColor, mat_adj, map_colors);
-
-            action(v, J, mat_adj, Vertices, map_colors);
-
 
             /// --------PRINT DA MATRIZ-------------
             std::cout << "Cor de cada vértice (vertice, cor): ";
-            for(int k : Vertices){
+            for(int k = 0; k < Nv; ++k){
                 std::cout << "(" << k << ", " << map_colors[k] <<");";
             }std::cout << std::endl;
             std::cout << "V ";
-            for(int k : Vertices){
+            for(int k = 0; k < Nv; ++k){
                 std::cout << k << " ";
             }
             std::cout << std::endl;
-            for(int k : Vertices){
+            for(int k = 0; k < Nv; ++k){
                 std::cout << k << " ";
-                for(int l : Vertices){
+                for(int l = 0; l < Nv; ++l){
                     std::cout << mat_adj[k][l] << " ";
                 }
                 std::cout << std::endl;
             }
             std::cout << std::endl;
             /// -------------------------------------
-        }
-        std::cout << "Foram necessárias " << actcount << " ações para chegar no grafo trivial" << std::endl;
-        auto end = std::chrono::steady_clock::now();
-        /// ============================== TIMER TERMINA =================================================
-        auto diff( end - start );
 
-        elapsed_time_mean = ( std::chrono::duration <double, std::milli> (diff).count() );
+
+            // Ler grafo G = (V, A):
+            // Ler vértices, e suas cores respectivas
+            // Ler arestas (criar matriz de adjacência n por n)
+            int actcount = 0;
+            while(Vertices.size() != 1){
+                // std::cout << "AAAAA1" << std::endl;
+                std::pair<int, int> a = find(Vertices, mat_adj, map_colors, nc);
+                //std::cout << "AAAAA2" << std::endl;
+                int v = a.first; // Na prática, já encontrou esse valor antes
+                int idealColor = a.second;
+                std::cout << "A ação será no vértice " << v << " com a cor " << idealColor << "."<< std::endl;
+                actcount++;
+                // vou fazer uma função que encontra os adjacentes em função do ponto e da cor
+                std::vector<int> J = findAdj(v, idealColor, mat_adj, map_colors);
+
+                action(v, J, mat_adj, Vertices, map_colors);
+
+
+                /// --------PRINT DA MATRIZ-------------
+                std::cout << "Cor de cada vértice (vertice, cor): ";
+                for(int k : Vertices){
+                    std::cout << "(" << k << ", " << map_colors[k] <<");";
+                }std::cout << std::endl;
+                std::cout << "V ";
+                for(int k : Vertices){
+                    std::cout << k << " ";
+                }
+                std::cout << std::endl;
+                for(int k : Vertices){
+                    std::cout << k << " ";
+                    for(int l : Vertices){
+                        std::cout << mat_adj[k][l] << " ";
+                    }
+                    std::cout << std::endl;
+                }
+                std::cout << std::endl;
+                /// -------------------------------------
+            }
+            std::cout << "Foram necessárias " << actcount << " ações para chegar no grafo trivial" << std::endl;
+            auto end = std::chrono::steady_clock::now();
+            /// ============================== TIMER TERMINA =================================================
+            auto diff( end - start );
+
+            elapsed_time_mean += ( std::chrono::duration <double, std::milli> (diff).count() );
+        }
+
+        elapsed_time_mean = elapsed_time_mean/1000;
+        
 
         out_file << "# Medição do tempo do teste "<< times << ": " << std::to_string(elapsed_time_mean) << "\n";
     }
