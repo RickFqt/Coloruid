@@ -225,26 +225,26 @@ int main( int argc, char * argv[] ){
 
 
     std::string testCases[20] = {
-        "./a.txt",
-        "./b.txt",
-        "./c.txt",
-        "./d.txt",
-        "./e.txt",
-        "./f.txt",
-        "./g.txt",
-        "./h.txt",
-        "./i.txt",
-        "./j.txt",
-        "./k.txt",
-        "./l.txt",
-        "./m.txt",
-        "./n.txt",
-        "./o.txt",
-        "./p.txt",
-        "./q.txt",
-        "./r.txt",
-        "./s.txt",
-        "./t.txt"
+        "./niveis/entradas/a.txt",
+        "./niveis/entradas/b.txt",
+        "./niveis/entradas/c.txt",
+        "./niveis/entradas/d.txt",
+        "./niveis/entradas/e.txt",
+        "./niveis/entradas/f.txt",
+        "./niveis/entradas/g.txt",
+        "./niveis/entradas/h.txt",
+        "./niveis/entradas/i.txt",
+        "./niveis/entradas/j.txt",
+        "./niveis/entradas/k.txt",
+        "./niveis/entradas/l.txt",
+        "./niveis/entradas/m.txt",
+        "./niveis/entradas/n.txt",
+        "./niveis/entradas/o.txt",
+        "./niveis/entradas/p.txt",
+        "./niveis/entradas/q.txt",
+        "./niveis/entradas/r.txt",
+        "./niveis/entradas/s.txt",
+        "./niveis/entradas/t.txt"
     };
 
     std::ofstream out_file;
