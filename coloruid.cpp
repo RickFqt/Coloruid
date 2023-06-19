@@ -46,11 +46,11 @@ std::pair<int, int> find(std::list<int>& Vertices, std::vector<std::vector<int>>
     
     // Se houver vértices de cor única no grafo:
     if(!theOnes.empty()){
-        std::cout << "theOnes" << std::endl;
+        // std::cout << "theOnes" << std::endl;
         toCheck = theOnes;
     }
     else{
-        std::cout << "Vertices" << std::endl;
+        // std::cout << "Vertices" << std::endl;
         toCheck = Vertices;
     }
 
@@ -63,21 +63,34 @@ std::pair<int, int> find(std::list<int>& Vertices, std::vector<std::vector<int>>
     int v_max_colors = -1;
     int c_max_colors = -1;
     int max_colors = -1;
+
+    int v_all_max_colors = -1;
+    int c_all_max_colors = -1;
+    int all_max_colors = -1;
+    int current_all_max_colors = -1;
+    
+    // std::vector<int> all_colors_count = (Vertices.size(),-1);
+    
     int number;
     for(int i : toCheck){
         //std::cout << "vértice " << i<< std::endl;
+        current_all_max_colors = 0;
         for(int j = 0; j < nc; ++j){
             number = allInOne(i, mat_adj, n_colors[j]);
             //std::cout << "number da cor " << j <<": " << number << std::endl;
             // Se houver vértice v ligado a todos os vértices J de uma cor:
-                std::cout<< "nó " << i << std::endl;
-                std::cout<< "cor " << j << std::endl;
-                std::cout<< "number " << number << std::endl;
-                std::cout<< "size " << n_colors[j].size() << std::endl;
-            if(i == 12){
-            }
+                // std::cout<< "nó " << i << std::endl;
+                // std::cout<< "cor " << j << std::endl;
+                // std::cout<< "number " << number << std::endl;
+                // std::cout<< "size " << n_colors[j].size() << std::endl;
             if(number == n_colors[j].size() && number != 0){
-                return {i, j};
+                current_all_max_colors++;
+                if(current_all_max_colors > all_max_colors){
+                    all_max_colors = current_all_max_colors;
+                    v_all_max_colors = i;
+                    c_all_max_colors = j;
+                }
+                // return {i, j};
             }
             if(number > max_colors){
                 //std::cout <<"cor " << j << std::endl;
@@ -94,7 +107,11 @@ std::pair<int, int> find(std::list<int>& Vertices, std::vector<std::vector<int>>
     //     std::cout << i << std::endl;
     // }
     // std::cout << std::endl;
-    return {v_max_colors, c_max_colors};
+    if(all_max_colors > 0){
+        return {v_all_max_colors, c_all_max_colors};    
+    }else{
+        return {v_max_colors, c_max_colors};
+    }
 
 }
 
@@ -261,6 +278,10 @@ int main(int argc, char* argv[]){
     // }
 
     /// --------PRINT DA MATRIZ-------------
+    std::cout << "Cor de cada vértice (vertice, cor): ";
+    for(int k = 0; k < Nv; ++k){
+        std::cout << "(" << k << ", " << map_colors[k] <<");";
+    }std::cout << std::endl;
     std::cout << "V ";
     for(int k = 0; k < Nv; ++k){
         std::cout << k << " ";
@@ -307,14 +328,18 @@ int main(int argc, char* argv[]){
 
 
         /// --------PRINT DA MATRIZ-------------
+        std::cout << "Cor de cada vértice (vertice, cor): ";
+        for(int k : Vertices){
+            std::cout << "(" << k << ", " << map_colors[k] <<");";
+        }std::cout << std::endl;
         std::cout << "V ";
-        for(int k = 0; k < Nv; ++k){
+        for(int k : Vertices){
             std::cout << k << " ";
         }
         std::cout << std::endl;
-        for(int k = 0; k < Nv; ++k){
+        for(int k : Vertices){
             std::cout << k << " ";
-            for(int l = 0; l < Nv; ++l){
+            for(int l : Vertices){
                 std::cout << mat_adj[k][l] << " ";
             }
             std::cout << std::endl;
