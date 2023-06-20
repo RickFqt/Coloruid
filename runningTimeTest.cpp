@@ -93,20 +93,13 @@ std::pair<int, int> find(std::list<int>& Vertices, std::vector<std::vector<int>>
     
     // Se houver vértices de cor única no grafo:
     if(!theOnes.empty()){
-        // std::cout << "theOnes" << std::endl;
+
         toCheck = theOnes;
     }
     else{
-        // std::cout << "Vertices" << std::endl;
         toCheck = Vertices;
     }
 
-    // for(int i = 0; i < n_colors.size(); ++i){
-    //     for (int j : n_colors[i]){
-    //         std::cout << j << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
     int v_max_colors = -1;
     int c_max_colors = -1;
     int max_colors = -1;
@@ -116,20 +109,14 @@ std::pair<int, int> find(std::list<int>& Vertices, std::vector<std::vector<int>>
     int all_max_colors = -1;
     int current_all_max_colors = -1;
     
-    // std::vector<int> all_colors_count = (Vertices.size(),-1);
-    
     int number;
     for(int i : toCheck){
-        //std::cout << "vértice " << i<< std::endl;
+
         current_all_max_colors = 0;
         for(int j = 0; j < nc; ++j){
             number = allInOne(i, mat_adj, n_colors[j]);
-            //std::cout << "number da cor " << j <<": " << number << std::endl;
+
             // Se houver vértice v ligado a todos os vértices J de uma cor:
-                // std::cout<< "nó " << i << std::endl;
-                // std::cout<< "cor " << j << std::endl;
-                // std::cout<< "number " << number << std::endl;
-                // std::cout<< "size " << n_colors[j].size() << std::endl;
             if(number == n_colors[j].size() && number != 0){
                 current_all_max_colors++;
                 if(current_all_max_colors > all_max_colors){
@@ -137,23 +124,18 @@ std::pair<int, int> find(std::list<int>& Vertices, std::vector<std::vector<int>>
                     v_all_max_colors = i;
                     c_all_max_colors = j;
                 }
-                // return {i, j};
+
             }
+            // Senão:
+            // Achar o vértice v ligado a maior quantidade de vértices J de mesma cor
             if(number > max_colors){
-                //std::cout <<"cor " << j << std::endl;
+
                 max_colors = number;
                 v_max_colors = i;
                 c_max_colors = j;
             }
         }
     }
-    // Senão:
-    // Achar o vértice v ligado a maior quantidade de vértices J de mesma cor
-    // std::cout << "nós verdes: " << std::endl;
-    // for(int i : n_colors[1]){
-    //     std::cout << i << std::endl;
-    // }
-    // std::cout << std::endl;
     if(all_max_colors > 0){
         return {v_all_max_colors, c_all_max_colors};    
     }else{
@@ -178,14 +160,12 @@ void action(int n,  std::vector<int> adj, std::vector<std::vector<int>>& mat_adj
              std::list<int>& current_nodes, std::unordered_map<int, int> &map_colors){
     map_colors[n] = map_colors[adj[0]];
 
-    // std::cout << "vc buga aqui" << std::endl;
 
     // Remover adj de current_nodes
     std::list<int>::iterator it = current_nodes.begin();
     
     std::vector<int>::iterator it_adj = adj.begin();
     
-    //std::cout << "pre while" << std::endl;
     while (it_adj != adj.end())
     {
         if(*it == *it_adj){
@@ -197,8 +177,8 @@ void action(int n,  std::vector<int> adj, std::vector<std::vector<int>>& mat_adj
         }
         
     }
-    // std::cout << "não" << std::endl;
-    //std::cout << "pos while" << std::endl;
+
+
     for(int y: adj){
         for(int i: current_nodes){
 
@@ -214,11 +194,9 @@ void action(int n,  std::vector<int> adj, std::vector<std::vector<int>>& mat_adj
         }
         mat_adj[y][y] = 0;
     }
-    //std::cout << "pos for" << std::endl;
+
 }
 
-
-//=== CONSTANT DEFINITIONS.
 
 //=== The main function, entry point.
 int main( int argc, char * argv[] ){
@@ -292,10 +270,10 @@ int main( int argc, char * argv[] ){
                         ++j;
                     }
                 }else{
-                    // std::cout << "chega aqui?" << std::endl;
+
                     if(colorcount < Nv){
                         colorcount++;
-                        // std::cout << "buga aqui?" << std::endl;
+
                         map_colors[std::stoi(tokenLine[0])] = std::stoi(tokenLine[1]);
                     }else{
                         mat_adj[std::stoi(tokenLine[0])][std::stoi(tokenLine[1])] = 1;
@@ -333,15 +311,11 @@ int main( int argc, char * argv[] ){
             std::cout << std::endl;
             /// -------------------------------------
 
-
-            // Ler grafo G = (V, A):
-            // Ler vértices, e suas cores respectivas
-            // Ler arestas (criar matriz de adjacência n por n)
             int actcount = 0;
             while(Vertices.size() != 1){
-                // std::cout << "AAAAA1" << std::endl;
+
                 std::pair<int, int> a = find(Vertices, mat_adj, map_colors, nc);
-                //std::cout << "AAAAA2" << std::endl;
+
                 int v = a.first; // Na prática, já encontrou esse valor antes
                 int idealColor = a.second;
                 std::cout << "A ação será no vértice " << v << " com a cor " << idealColor << "."<< std::endl;
